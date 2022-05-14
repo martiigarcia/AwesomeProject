@@ -27,6 +27,8 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import List from "./src/components/list";
 import ItemSeparator from "./src/components/item-separator";
+import Loading from "./src/components/Loading";
+import {Error} from "./src/components/Error";
 
 const Section = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -66,6 +68,7 @@ const App: () => Node = () => {
 
     <SafeAreaView style={backgroundStyle}>
      <List />
+
 
     </SafeAreaView>
   );

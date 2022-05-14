@@ -1,8 +1,11 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import {FlatList, SafeAreaView, Text, TouchableOpacity, StyleSheet, useColorScheme, View} from "react-native";
 import Location from "../models/location";
 import {Colors} from "react-native/Libraries/NewAppScreen";
 import ItemSeparator from "./item-separator";
+import {environment} from "../environments/environments";
+import Authorization  from "../utils/Authorization";
+import Loading from "./Loading";
 
 
 const List = () => {
@@ -12,9 +15,31 @@ const List = () => {
         color: isDarkMode ? Colors.lighter :
             Colors.darker,
     };
+    const [loading, setLoading] = useState(true);
+    const [locations, setLocations] = useState([]);
+    useEffect(() => {
+        loadData();
+    }, []);
+    const loadData = () => {
+        setLoading(true);
+        setLocations([])
+        fetch(environment.baseURL + "api/locations", Authorization)
+            .then(res => res.json())
+            .then(data => {
+                let locations = data?.map(l => new Location(l));
+                setLocations(locations);
+                setLoading(false);
+            }).catch(e => {
+            setLoading(false);
+        });
+    }
+    const handleRefresh = () => {
+        loadData();
+    };
 
 
-    const locations: Location[] = [
+
+   /* const locations: Location[] = [
         new Location({
             id: 1, name: "Viedma", contact: "2920553263",
             linkInfo: "link info", latitude: 23.34,
@@ -26,7 +51,7 @@ const List = () => {
             linkInfo: "link info patagones", latitude:
                 23.34, longitude: 23.4,
         }),
-    ];
+    ];*/
 
     const renderitemComponent = (info) =>
         <TouchableOpacity style={styles.container}>
@@ -37,6 +62,8 @@ const List = () => {
         </TouchableOpacity>;
     return (
         <SafeAreaView>
+            {loading === true && <Loading />}
+
             <FlatList data={locations}
                       renderItem={info => renderitemComponent(info)}
                       keyExtractor={location => location.id}
